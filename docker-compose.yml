@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  uploader:
+    image: uno-uploader:latest
+    restart: always
+    volumes:
+      - "/opt/data/images:/opt/images:rw"
+    network_mode: bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10k"
+        max-file: "10"
