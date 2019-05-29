@@ -3,6 +3,7 @@ from requests import post, get
 from flask import Flask, request, redirect, url_for, flash
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+import logging
 
 
 UPLOAD_FOLDER = '/opt/images'
@@ -12,6 +13,10 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'doc
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 CORS(app)
+
+gunicorn_error_logger = logging.getLogger('gunicorn.error')
+app.logger.handlers.extend(gunicorn_error_logger.handlers)
+app.logger.setLevel(logging.DEBUG)
 
 def allowed_file(filename):
     return True
@@ -45,6 +50,7 @@ def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
+            app.logger.debug(f"No file part")
             flash('No file part')
             return redirect(request.url)
         files = request.files.getlist('file')
@@ -52,6 +58,7 @@ def upload_file():
         # if user does not select file, browser also
         # submit a empty part without filename
         for file in files:
+          app.logger.debug(f"File: {file}")
           if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
@@ -73,6 +80,14 @@ def upload_file():
     <!doctype html>
 File service
     '''
+
+
+@app.route('/message', methods=['POST'])
+def files():
+        app.logger.debug(f'POST files: {request.files["file"]}')
+        file = request.files['file']
+        files = {'file': file.read()}
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
