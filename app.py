@@ -82,12 +82,6 @@ File service
     '''
 
 
-@app.route('/message', methods=['POST'])
-def files():
-        app.logger.debug(f'POST files: {request.files["file"]}')
-        file = request.files['file']
-        files = {'file': file.read()}
-
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
