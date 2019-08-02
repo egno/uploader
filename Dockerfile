@@ -1,4 +1,4 @@
-FROM python:3.6-slim-stretch
+FROM gitlab.unosalon.ml:4567/containers/flask:latest
 
 COPY . /app
 
